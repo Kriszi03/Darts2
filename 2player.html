@@ -1,0 +1,194 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+    <title>HTML</title>
+    
+    
+    
+  
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="2player.css">
+  </head>
+  
+  <body>
+    <div id="game">
+    <p id="winner"></p>
+    <img src="/cup.png" id="cup">
+    <div class="missX">X</div>
+    
+    <div id="respopB">
+    <div class="resPop" id="resPop">
+      <h2 id="poptext">Játék Vége!</h2>
+      <div class="popUp2">
+        
+       <button class="restar" id="restar" onclick="resGame()">Restart
+    </button>
+    <button class="mainMenu" id="mainMenu" onclick="menu()">Main Menu</button>
+      </div>
+    </div>
+  </div>
+  
+    <div class="throws">
+    <span id="throw1">-</span>
+    <span id="throw2">-</span>
+    <span id="throw3"> -</span>
+    </div>
+    <div class="scoreboard" id="scoreboard">
+      <div class="p1-container">
+      <label for="p1-scores" id="p1-name"></label>
+      <div class="scores p1-scores" id="p1-scores">---</div>
+      </div>
+      <div class="scores p2-scores" id="p2-scores">---</div>
+      
+    </div>
+    
+    <div class="display" id="display">
+      <div class="turns-lbl" id="turns-lbl">Dobások</div>
+      <div class=" turns-left" id="turns-left"></div>
+      <div class="current-lbl" id="current-lbl">Játékos</div>
+      <div class=" current-player" id="current-player">0</div>
+    </div>
+    
+    <button onclick="fullScreen()" id="screen">Fullscreen</button>
+
+    <input type="checkbox" class="chk" id="chk" name="pOrN" value="Custom">
+      
+    <div id="playerPopUp" class="popup">
+      <div class="popup-box">
+        <h2>Enter Name</h2>
+          <input id="player1" placeholder="Player 1 name">
+          <input id="player2" placeholder="Player 2 name">
+          <button onclick="closePopUp()">Continue</button>
+        </div>
+      </div>
+  
+    <button class="buttons miss" id="miss" onclick="miss()">
+      <span class="missfront">Miss</span>
+    </button>
+  
+     <button class="buttons undo" id="undo" onclick="undoThrow()">
+       <span class="undofront">Undo</span>
+       </button>
+  
+    <button class="buttons p-next" onclick="nextPlayer()">
+      <span class="p-nextfront">Next player</span></button>
+  
+       <div class="score-btns" id="score-btns">
+   
+      <button class="scrbtn btn20" id="btn20" onclick="addScore(20)">
+      </button>
+      <button class="scrbtn btn1" id="btn1" onclick="addScore(1)"></button>
+      <button class="scrbtn btn18" id="btn18" onclick="addScore(18)"></button>
+      <button class="scrbtn btn4" id="btn4" onclick="addScore(4)"></button>
+      <button class="scrbtn btn13" id="btn13" onclick="addScore(13)"></button>
+      <button class="scrbtn btn6" id="btn6" onclick="addScore(6)"></button>
+      <button class="scrbtn btn10" id="btn10" onclick="addScore(10)"></button>
+      <button class="scrbtn btn15" id="btn15" onclick="addScore(15)"></button>
+      <button class="scrbtn btn2" id="btn2" onclick="addScore(2)"></button>
+      <button class="scrbtn btn17" id="btn17" onclick="addScore(17)"></button>
+      <button class="scrbtn btn3" id="btn3" onclick="addScore(3)"></button>
+    <button class="scrbtn btn19" id="19" onclick="addScore(19)"></button>
+    <button class="scrbtn btn7" id="btn7" onclick="addScore(7)"></button>
+    <button class="scrbtn btn16" id="btn16" onclick="addScore(16)"></button>
+    <button class="scrbtn btn8" id="btn8" onclick="addScore(8)"></button>
+    <button class="scrbtn btn11" id="btn11" onclick="addScore(11)"></button>
+    <button class="scrbtn btn14" id="btn14" onclick="addScore(14)"></button>
+     <button class="scrbtn btn9" id="btn9" onclick="addScore(9)"></button>
+      <button class="scrbtn btn12" id="12" onclick="addScore(12)"></button>
+       <button class="scrbtn btn5" id="btn5" onclick="addScore(5)"></button>
+       </div>
+    <div>
+    <button class="circle-green" onclick="addScore(25)"></button>
+    <button class="bull"
+    onclick="addScore(50)"></button>
+     </div>
+     
+     
+    <div class="xx" id="xx">
+      
+    <button class="x2R x-20" onclick="addScore(40)"></button>
+    <button class="x2G x-1" onclick=addScore(2)></button>
+    <button class="x2R x-18"onclick="addScore(36)"></button>
+    <button class="x2G x-4" onclick="addScore(8)"></button>
+    <button class="x2R x-13" onclick="addScore(26)"></button>
+    <button class="x2G x-6" onclick="addScore(12)"></button>
+    <button class="x2R x-10" onclick="addScore(20)"></button>
+    <button class="x2G x-15" onclick="addScore(30)"></button>
+    <button class="x2R x-2" onclick="addScore(4)"></button>
+    <button class="x2G x-17" onclick="addScore(34)"></button>
+    <button class="x2R x-3" onclick="addScore(6)"></button>
+    <button class="x2G x-19" onclick="addScore(38)"></button>
+    <button class="x2R x-7" onclick="addScore(14)"></button>
+    <button class="x2G x-16" onclick="addScore(32)"></button>
+    <button class="x2R x-8" onclick="addScore(16)"></button>
+    <button class="x2G x-11" onclick="addScore(22)"></button>
+    <button class="x2R x-14" onclick="addScore(28)"></button>
+    <button class="x2G x-9" onclick="addScore(18)"></button>
+    <button class="x2R x-12" onclick="addScore(24)"></button>
+    <button class="x2G x-5" onclick="addScore(10)"></button>
+  </div>
+  
+   <div class="xxx" id="xxx">
+      
+    <button class="x3R xx-20" onclick="addScore(60)"></button>
+    <button class="x3G xx-1" onclick=addScore(3)></button>
+    <button class="x3R xx-18" onclick="addScore(54)"></button>
+    <button class="x3G xx-4" onclick="addScore(12)"></button>
+    <button class="x3R xx-13" onclick="addScore(39)"></button>
+    <button class="x3G xx-6" onclick="addScore(18)"></button>
+    <button class="x3R xx-10" onclick="addScore(30)"></button>
+    <button class="x3G xx-15" onclick="addScore(45)"></button>
+    <button class="x3R xx-2" onclick="addScore(6)"></button>
+    <button class="x3G xx-17" onclick="addScore(51)"></button>
+    <button class="x3R xx-3" onclick="addScore(9)"></button>
+    <button class="x3G xx-19" onclick="addScore(57)"></button>
+    <button class="x3R xx-7" onclick="addScore(21)"></button>
+    <button class="x3G xx-16" onclick="addScore(48)"></button>
+    <button class="x3R xx-8" onclick="addScore(24)"></button>
+    <button class="x3G xx-11" onclick="addScore(33)"></button>
+    <button class="x3R xx-14" onclick="addScore(42)"></button>
+    <button class="x3G xx-9" onclick="addScore(27)"></button>
+    <button class="x3R xx-12" onclick="addScore(36)"></button>
+    <button class="x3G xx-5" onclick="addScore(15)"></button>
+  </div>
+  
+  
+  <div class="circle" id="circle">
+    <div class="board-numbers">
+  <span class="n20">20</span>
+  <span class="n1">1</span>
+  <span class="n18">18</span>
+  <span class="n4">4</span>
+  <span class="n13">13</span>
+  <span class="n6">6</span>
+  <span class="n10">10</span>
+  <span class="n15">15</span>
+  <span class="n2">2</span>
+  <span class="n17">17</span>
+  <span class="n3">3</span>
+  <span class="n19">19</span>
+  <span class="n7">7</span>
+  <span class="n16">16</span>
+  <span class="n8">8</span>
+  <span class="n11">11</span>
+  <span class="n14">14</span>
+  <span class="n9">9</span>
+  <span class="n12">12</span>
+  <span class="n5">5</span>
+</div>
+
+  </div>
+  
+
+  </div>
+  
+  
+  
+
+  <script src="2player.js" defer></script>
+</body>
+</html>
