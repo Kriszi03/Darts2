@@ -21,7 +21,7 @@ let p3Score;
 let dartsThrown = 0;
 let turnTimer;
 
-const scoreButtons = document.querySelectorAll(".scrbtn, .x2G,x2R, .circle-green, .bull, .x3G, x3R");
+const scoreButtons = document.querySelectorAll(".scrbtn, .x2G, .x2R, .circle-green, .bull, .x3G, .x3R");
 
 function disableScoreButtons() {
     scoreButtons.forEach(button => button.disabled = true);
@@ -91,10 +91,10 @@ function startPopUp() {
 
 
 
-var win = new Audio("files/victory.mp3");
+var win = new Audio("victory.mp3");
 win.volume = 0.03;
 
-var bust = new Audio("files/bust.mp3");
+var bust = new Audio("bust.mp3");
 bust.volume = 0.5
 
 document.getElementById('miss').addEventListener('click', function() {
@@ -108,7 +108,7 @@ document.getElementById('miss').addEventListener('click', function() {
 
 function toggleMissX() {
   mX.classList.toggle("active");
-  var error = new Audio("files/error.mp3");
+  var error = new Audio("error.mp3");
 error.volume = 0.5;
   error.play();
   navigator.vibrate(1000);
