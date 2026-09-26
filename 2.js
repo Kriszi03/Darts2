@@ -23,7 +23,7 @@ let p4Score;
 
 let dartsThrown = 0;
 let turnTimer;
-const scoreButtons = document.querySelectorAll(".scrbtn, .x2R, x2G, .circle-green, .bull, .x3R, x3G");
+const scoreButtons = document.querySelectorAll(".scrbtn, .x2R, .x2G, .circle-green, .bull, .x3R, .x3G");
 
 function disableScoreButtons() {
     scoreButtons.forEach(button => button.disabled = true);
