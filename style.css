@@ -21,6 +21,8 @@ body {
 
   margin: 0;
 
+  touch-action: none;
+
   transform-origin: center center;
 }
 
