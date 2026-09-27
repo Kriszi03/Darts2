@@ -410,52 +410,133 @@ function nextPlayer() {
 
 
 
-startGame();
+startGame() 
+
+const DESIGN_WIDTH = 360;
+const DESIGN_HEIGHT = 700;
+
+const game = document.getElementById("game");
+
+let baseScale = 1;
+let zoom = 1;
+
+// Pinch state
+let pinchStartDistance = 0;
+let pinchStartZoom = 1;
 
 
-
- 
+// -------------------------
+// Resize / fullscreen
+// -------------------------
 
 function resizeGame() {
-    const game = document.getElementById("game");
+    const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
 
-    const DESIGN_WIDTH = 360;
-    const DESIGN_HEIGHT = 700;
-    const viewportWidth = document.documentElement.clientWidth;
-    const viewportHeight = document.documentElement.clientHeight;
+            const scaleX = viewportWidth / DESIGN_WIDTH;
+                const scaleY = viewportHeight / DESIGN_HEIGHT;
 
-    const scaleX = viewportWidth / DESIGN_WIDTH;
-    const scaleY = viewportHeight / DESIGN_HEIGHT;
+                    // Scale needed to fit the original game into the screen
+                        baseScale = Math.min(scaleX, scaleY);
 
-    // Keep the original 360:700 proportions
-    const scale = Math.min(scaleX, scaleY);
+                            applyTransform();
+                            }
 
-    game.style.transform =
-        `translate(-50%, -50%) scale(${scale})`;
-}
 
-window.addEventListener("resize", resizeGame);
-window.addEventListener("orientationchange", resizeGame);
+                            function applyTransform() {
+                                game.style.transform =
+                                        `translate(-50%, -50%) scale(${baseScale * zoom})`;
+                                        }
 
-resizeGame();
 
-function fullScreen() {
-  const game = document.documentElement;
+                                        window.addEventListener("resize", resizeGame);
+                                        window.addEventListener("orientationchange", resizeGame);
 
-    if (!document.fullscreenElement) {
-        game.requestFullscreen().catch(err => {
-            console.log("Fullscreen failed:", err);
-        });
-    } else {
-        document.exitFullscreen();
-    }
-    resizeGame();
-}
+                                        document.addEventListener("fullscreenchange", resizeGame);
 
-setTimeout(() => {
-  document.getElementById("screen").style.display = "none";
-}, 20000);
+                                        resizeGame();
 
-document.getElementById("screen").addEventListener('click', function() {
-  document.getElementById("screen").style.display = "none";
-});
+
+                                        // -------------------------
+                                        // Fullscreen
+                                        // -------------------------
+
+                                        function fullScreen() {
+                                            if (!document.fullscreenElement) {
+
+                                                    document.documentElement.requestFullscreen().catch(err => {
+                                                                console.log("Fullscreen failed:", err);
+                                                                        });
+
+                                                                            } else {
+
+                                                                                    document.exitFullscreen();
+
+                                                                                        }
+                                                                                        }
+
+
+                                                                                        // -------------------------
+                                                                                        // Pinch zoom
+                                                                                        // -------------------------
+
+                                                                                        function getDistance(touch1, touch2) {
+                                                                                            const dx = touch2.clientX - touch1.clientX;
+                                                                                                const dy = touch2.clientY - touch1.clientY;
+
+                                                                                                    return Math.sqrt(dx * dx + dy * dy);
+                                                                                                    }
+
+
+                                                                                                    game.addEventListener("touchstart", function(e) {
+
+                                                                                                        if (e.touches.length === 2) {
+
+                                                                                                                e.preventDefault();
+
+                                                                                                                        pinchStartDistance = getDistance(
+                                                                                                                                    e.touches[0],
+                                                                                                                                                e.touches[1]
+                                                                                                                                                        );
+                                                                                                                                                                pinchStartZoom = zoom;
+                                                                                                                                                                    }
+
+                                                                                                                                                                    }, { passive: false });
+
+
+                                                                                                                                                                    game.addEventListener("touchmove", function(e) {
+
+                                                                                                                                                                        if (e.touches.length === 2) {
+
+                                                                                                                                                                                e.preventDefault();
+
+                                                                                                                                                                                        const currentDistance = getDistance(
+                                                                                                                                                                                                    e.touches[0],
+                                                                                                                                                                                                                e.touches[1]
+                                                                                                                                                                                                                        );
+
+                                                                                                                                                                                                                                if (pinchStartDistance > 0) {
+
+                                                                                                                                                                                                                                            const scale =
+                                                                                                                                                                                                                                                            currentDistance / pinchStartDistance;
+
+                                                                                                                                                                                                                                                                        zoom = pinchStartZoom * scale;
+
+                                                                                                                                                                                                                                                                                    // Prevent it becoming ridiculously small/large
+                                                                                                                                                                                                                                                                                                zoom = Math.max(0.8, Math.min(3, zoom));
+
+                                                                                                                                                                                                                                                                                                            applyTransform();
+                                                                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                                                                        }
+
+                                                                                                                                                                                                                                                                                                                        }, { passive: false });
+
+
+                                                                                                                                                                                                                                                                                                                        game.addEventListener("touchend", function(e) {
+
+                                                                                                                                                                                                                                                                                                                            if (e.touches.length < 2) {
+                                                                                                                                                                                                                                                                                                                                    pinchStartDistance = 0;
+                                                                                                                                                                                                                                                                                                                                        }
+
+                                                                                                                                                                                                                                                                                                                                        });
+                                                                                                                                                                                                                                                                                                                                        
