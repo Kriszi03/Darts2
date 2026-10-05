@@ -655,4 +655,3 @@ setTimeout(() => {
 screen.addEventListener("click", function() {
   screen.style.display = "none";
 });
-
