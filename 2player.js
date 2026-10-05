@@ -174,7 +174,7 @@ function addScore(points) {
 } else if (currentPlayer === 2) {
     p2Score -= points;
 }
-} 
+
     
 
 
@@ -257,7 +257,7 @@ if(p1Score < 0) {
   
   updateDisplay();
  console.log(currentPlayer + "jatekos");
-
+}
 
 
   function undoThrow() {
