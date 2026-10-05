@@ -1,7 +1,7 @@
 let scoreDisp1 = document.getElementById("p1-scores");
 let scoreDisp2 = document.getElementById("p2-scores");
 let scoreDisp3 = document.getElementById("p3-scores");
-let scoreDisp4 = document.getElementById("p4-scores");
+
 
 let currentScoreDisp = document.getElementById("currentScores");
 let currentScore;
