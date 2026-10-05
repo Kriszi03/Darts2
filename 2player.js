@@ -257,7 +257,7 @@ if(p1Score < 0) {
   
   updateDisplay();
  console.log(currentPlayer + "jatekos");
-}
+
 
 
   function undoThrow() {
