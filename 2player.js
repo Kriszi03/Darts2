@@ -1,7 +1,6 @@
 let scoreDisp1 = document.getElementById("p1-scores");
 let scoreDisp2 = document.getElementById("p2-scores");
-let scoreDisp3 = document.getElementById("p3-scores");
-let scoreDisp4 = document.getElementById("p4-scores");
+
 
 let currentScoreDisp = document.getElementById("currentScores");
 let currentScore;
@@ -15,8 +14,6 @@ let winnerDisp = document.getElementById("winner");
 
 let p1Score;
 let p2Score;
-let p3Score;
-let p4Score;
 
 
 
@@ -68,24 +65,10 @@ winnerDisp.innerHTML = "Player 2 wins!";
   }, 5500);
 
   
-} else if(p3Score === 0) {
-  winnerDisp.innerHTML = "Player 3 wins!";
-  win.play();
-  document.getElementById("cup").style.display = "block";
-  setTimeout(() => {
-    document.getElementById("respopB").style.display = "block";
-  }, 5500);
-
-} else if(p4Score === 0) {
-  winnerDisp.innerHTML = "Player 4 wins!";
-  win.play();
-  document.getElementById("cup").style.display = "block";
-  setTimeout(() => {
-    document.getElementById("respopB").style.display = "block";
-  }, 5500);
+}
 
 }
-}
+
 
 restart.addEventListener('click', function() {
   location.reload();
@@ -132,8 +115,6 @@ error.volume = 0.5;
 function updateDisplay() {
     scoreDisp1.textContent = p1Score;
     scoreDisp2.textContent = p2Score;
-    scoreDisp3.textContent = p3Score;
-    scoreDisp4.textContent = p4Score;
     
     dartsThrownDisp.textContent = dartsThrown;
     
@@ -169,8 +150,6 @@ function startGame() {
 
     p1Score = startScore;
     p2Score = startScore;
-    p3Score = startScore;
-    p4Score = startScore;
 
     updateDisplay();
 
@@ -194,11 +173,8 @@ function addScore(points) {
     p1Score -= points;
 } else if (currentPlayer === 2) {
     p2Score -= points;
-} else if (currentPlayer === 3) {
-    p3Score -= points;
-} else if (currentPlayer === 4) {
-    p4Score -= points;
 }
+} 
     
 
 
@@ -250,50 +226,6 @@ if(p1Score < 0) {
     }, 2000);
   }
   
-  if(p3Score < 0) {
-    if (dartsThrown < 3 && p3Score < 0) {
-    setTimeout(() => {
-    currentPlayer++;
-    }, 2000);
-}
-      winnerDisp.innerHTML = "BUST!";
-      bust.play();
-      setTimeout(() => {
-      p3Score += currentThrows.reduce((sum, throwScore) => {
-  return sum + (Number(throwScore) || 0);
-}, 0);
-
-      currentThrows = ["-", "-", "-"]
-      dartsThrown = 0;
-      winnerDisp.innerHTML = "";
-      
-      updateDisplay();
-      return;
-    }, 2000);
-  }
-
-
-if(p4Score < 0) {
-  if (dartsThrown < 3 && p4Score < 0) {
-    setTimeout(() => {
-    currentPlayer++;
-    }, 2000);
-}
-      winnerDisp.innerHTML = "BUST!";
-      bust.play();
-      setTimeout(() => {
-      p4Score += currentThrows.reduce((sum, throwScore) => {
-  return sum + (Number(throwScore) || 0);
-}, 0);
-
-      currentThrows = ["-", "-", "-"]
-      dartsThrown = 0;
-      winnerDisp.innerHTML = "";
-      
-      updateDisplay();
-      return;
-    }, 2000);
-  }
 
   
   if(dartsThrown === 3) {
@@ -310,7 +242,7 @@ if(p4Score < 0) {
 
         currentPlayer++;
 
-        if(currentPlayer > 4) {
+        if(currentPlayer > 2) {
             currentPlayer = 1;
         }
 
@@ -342,10 +274,6 @@ if(p4Score < 0) {
         p1Score += lastThrow.points;
     } else if (currentPlayer === 2) {
         p2Score += lastThrow.points;
-    } else if (currentPlayer === 3) {
-        p3Score += lastThrow.points;
-    } else if (currentPlayer === 4) {
-        p4Score += lastThrow.points;
     }
 
     currentThrows = ["-", "-", "-"];
@@ -377,7 +305,7 @@ function miss() {
     setTimeout(() => {
     dartsThrown = 0;
     currentPlayer++;
-    if(currentPlayer > 4) {
+    if(currentPlayer > 2) {
       currentPlayer = 1;
     }
   
@@ -395,7 +323,7 @@ function nextPlayer() {
     dartsThrown = 0;
     currentPlayer++;
 }
-    if(currentPlayer >= 4) {
+    if(currentPlayer >= 2) {
       currentPlayer = 1;
       dartsThrown = 0;
     } else {
