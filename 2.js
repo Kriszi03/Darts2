@@ -409,111 +409,290 @@ function nextPlayer() {
 }
 
 
-
 startGame() 
 
-const DESIGN_WIDTH = 360;
-const DESIGN_HEIGHT = 700;
-
-const game = document.getElementById("game");
-
 let baseScale = 1;
-let zoom = 1;
+
+function resizeGame() {
+    const game = document.getElementById("game");
+
+    const DESIGN_WIDTH = 360;
+    const DESIGN_HEIGHT = 700;
+
+    const viewportWidth = document.documentElement.clientWidth;
+    const viewportHeight = document.documentElement.clientHeight;
+
+    const scaleX = viewportWidth / DESIGN_WIDTH;
+    const scaleY = viewportHeight / DESIGN_HEIGHT;
+
+    baseScale = Math.min(scaleX, scaleY);
+
+    updateGameTransform();
+}
+
+window.addEventListener("resize", resizeGame);
+window.addEventListener("orientationchange", resizeGame);
+
+
+// ==========================
+// FULLSCREEN
+// ==========================
+
+function fullScreen() {
+    const game = document.documentElement;
+
+    if (!document.fullscreenElement) {
+        game.requestFullscreen().catch(err => {
+            console.log("Fullscreen failed:", err);
+        });
+    } else {
+        document.exitFullscreen();
+    }
+
+    setTimeout(() => {
+        resizeGame();
+    }, 100);
+}
+
+
+// ==========================
+// PINCH + SWIPE
+// ==========================
+
+// ==========================
+// PINCH ZOOM + PAN
+// ==========================
+
+let zoomScale = 1;
+
+let panX = 0;
+let panY = 0;
 
 let pinchStartDistance = 0;
 let pinchStartZoom = 1;
 
+let dragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let dragStartPanX = 0;
+let dragStartPanY = 0;
 
-function resizeGame() {
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
-
-  const scaleX = viewportWidth / DESIGN_WIDTH;
-  const scaleY = viewportHeight / DESIGN_HEIGHT;
-
-  baseScale = Math.min(scaleX, scaleY);
-
-  applyTransform();
-  }
-
-
-function applyTransform() {
-  game.style.transform =
-  `translate(-50%, -50%) scale(${baseScale * zoom})`;
-  }
+let lastTouchX = 0;
+let lastTouchY = 0;
+let velocityX = 0;
+let velocityY = 0;
+let lastTouchTime = 0;
+let momentumFrame = null;
 
 
-    window.addEventListener("resize", resizeGame);
-    window.addEventListener("orientationchange", resizeGame);
-
-    document.addEventListener("fullscreenchange", resizeGame);
-
-  resizeGame();
-
- function fullScreen() {
-  if (!document.fullscreenElement) {
-
- document.documentElement.requestFullscreen().catch(err => {
-  console.log("Fullscreen failed:", err);
-  });
-
-   } else {
-   document.exitFullscreen();
-      }
-     }
+const game = document.getElementById("game");
 
 
-  function getDistance(touch1, touch2) {
-  const dx = touch2.clientX - touch1.clientX;
-  const dy = touch2.clientY - touch1.clientY;
+function getDistance(touch1, touch2) {
+    const dx = touch1.clientX - touch2.clientX;
+    const dy = touch1.clientY - touch2.clientY;
 
-  return Math.sqrt(dx * dx + dy * dy);
-  }
+    return Math.sqrt(dx * dx + dy * dy);
+}
 
- game.addEventListener("touchstart", function(e) {
 
-  if (e.touches.length === 2) {
-  e.preventDefault();
-       pinchStartDistance = getDistance(
-  e.touches[0],
-  e.touches[1]
-    );
-  pinchStartZoom = zoom;
+function updateGameTransform() {
+
+    game.style.transform =
+        `translate(calc(-50% + ${panX}px), calc(-50% + ${panY}px)) scale(${baseScale * zoomScale})`;
+}
+
+
+// --------------------------
+// TOUCH START
+// --------------------------
+
+document.addEventListener("touchstart", function(e) {
+
+    // Two fingers = pinch
+    if (e.touches.length === 2) {
+
+        pinchStartDistance = getDistance(
+            e.touches[0],
+            e.touches[1]
+        );
+
+        pinchStartZoom = zoomScale;
+
+        dragging = false;
+
+        return;
     }
 
-  }, { passive: false });
+
+    // One finger = start dragging
+    if (e.touches.length === 1 && zoomScale > 1) {
+
+    const touch = e.touches[0];
+
+    if (momentumFrame) {
+        cancelAnimationFrame(momentumFrame);
+        momentumFrame = null;
+    }
+
+    dragging = true;
+
+    dragStartX = touch.clientX;
+    dragStartY = touch.clientY;
+
+    dragStartPanX = panX;
+    dragStartPanY = panY;
+
+    lastTouchX = touch.clientX;
+    lastTouchY = touch.clientY;
+
+    velocityX = 0;
+    velocityY = 0;
+
+    lastTouchTime = performance.now();
+}
 
 
-  game.addEventListener("touchmove", function(e) {
+}, { passive: false });
 
-  if (e.touches.length === 2) {
 
-  e.preventDefault();
+// --------------------------
+// TOUCH MOVE
+// --------------------------
 
-  const currentDistance = getDistance(
-  e.touches[0],
-  e.touches[1]
-  );
+document.addEventListener("touchmove", function(e) {
 
-  if (pinchStartDistance > 0) {
+    // PINCH
+    if (e.touches.length === 2) {
 
-  const scale =
-  currentDistance / pinchStartDistance;
+        e.preventDefault();
 
-  zoom = pinchStartZoom * scale;
+        const distance = getDistance(
+            e.touches[0],
+            e.touches[1]
+        );
 
-  zoom = Math.max(0.8, Math.min(3, zoom));
+        if (pinchStartDistance > 0) {
 
-  applyTransform();
-  }
-  }
+            zoomScale =
+                pinchStartZoom *
+                (distance / pinchStartDistance);
 
-  }, { passive: false });
+            // Minimum = normal size
+            // Maximum = 3x
+            zoomScale = Math.max(
+                1,
+                Math.min(zoomScale, 6)
+            );
 
-  game.addEventListener("touchend", function(e) {
+            updateGameTransform();
+        }
 
-if (e.touches.length < 2) {
- pinchStartDistance = 0;
- }
-  });
-                                                                                                                                                                                                                                                                                                                                        
+        return;
+    }
+
+
+
+
+// PAN
+if (
+    e.touches.length === 1 &&
+    dragging &&
+    zoomScale > 1
+) {
+
+    e.preventDefault();
+
+    const touch = e.touches[0];
+
+    const now = performance.now();
+    const dt = Math.max(1, now - lastTouchTime);
+
+    const dx = touch.clientX - lastTouchX;
+    const dy = touch.clientY - lastTouchY;
+
+    panX += dx;
+    panY += dy;
+
+    velocityX = dx / dt;
+    velocityY = dy / dt;
+
+    lastTouchX = touch.clientX;
+    lastTouchY = touch.clientY;
+    lastTouchTime = now;
+
+    updateGameTransform();
+}
+});
+
+// --------------------------
+// TOUCH END
+// --------------------------
+
+document.addEventListener("touchend", function(e) {
+
+    if (e.touches.length === 0) {
+
+        dragging = false;
+        pinchStartDistance = 0;
+
+        // Android/Chrome-like momentum
+        let vx = velocityX * 16;
+        let vy = velocityY * 16;
+
+        function momentum() {
+
+            if (Math.abs(vx) < 0.1 && Math.abs(vy) < 0.1) {
+                momentumFrame = null;
+                return;
+            }
+
+            panX += vx;
+            panY += vy;
+
+            updateGameTransform();
+
+            // Friction
+            vx *= 0.94;
+            vy *= 0.94;
+
+            momentumFrame = requestAnimationFrame(momentum);
+        }
+
+        momentumFrame = requestAnimationFrame(momentum);
+    }
+
+    if (zoomScale <= 1) {
+
+        zoomScale = 1;
+
+        panX = 0;
+        panY = 0;
+
+        if (momentumFrame) {
+            cancelAnimationFrame(momentumFrame);
+            momentumFrame = null;
+        }
+
+        updateGameTransform();
+    }
+
+}, { passive: false });
+
+
+
+// Initial size
+resizeGame();
+
+
+// ==========================
+// YOUR EXISTING SCREEN CODE
+// ==========================
+
+setTimeout(() => {
+  document.getElementById("screen").style.display = "none";
+}, 20000);
+
+screen.addEventListener("click", function() {
+  screen.style.display = "none";
+});
