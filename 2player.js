@@ -234,7 +234,8 @@ if(p1Score < 0) {
   
   if(dartsThrown === 3) {
     disableScoreButtons();
-
+ 
+ 
     turnTimer = setTimeout(() => {
 
         // save the finished player's throws first
@@ -342,274 +343,288 @@ function nextPlayer() {
 
 startGame();
 
-
 let baseScale = 1;
 
 function resizeGame() {
-  const game = document.getElementById("game");
-  const DESIGN_WIDTH = 360;
-            
-  const DESIGN_HEIGHT = 700;
-
-const viewportWidth = document.documentElement.clientWidth;
- const viewportHeight = document.documentElement.clientHeight;
-
-  const scaleX = viewportWidth / DESIGN_WIDTH;
-  const scaleY = viewportHeight / DESIGN_HEIGHT;
-
-
-                                baseScale = Math.min(scaleX, scaleY);
-
-  updateGameTransform();
-   }
-   window.addEventListener("resize", resizeGame);
-   window.addEventListener("orientationchange", resizeGame);
-
-   function fullScreen() {
-        const game = document.documentElement;
-
-            if (!document.fullscreenElement) {
-                    game.requestFullscreen().catch(err => {
-                                console.log("Fullscreen failed:", err);
-                                        });
-                                            } else {
-                                                    document.exitFullscreen();
-                                                        }
-
-                                                        setTimeout(() => {
-                                                                    resizeGame();
-                                                                        }, 100);
-                                                                        }
-    let zoomScale = 1;
-
-    let panX = 0;
-    let panY = 0;
-
-    let pinchStartDistance = 0;
-    let pinchStartZoom = 1;
-
-    let dragging = false;
-    let dragStartX = 0;
-    let dragStartY = 0;
-    let dragStartPanX = 0;
-    let dragStartPanY = 0;
-
-    let lastTouchX = 0;
-    let lastTouchY = 0;
-    let velocityX = 0;
-    let velocityY = 0;
-    let lastTouchTime = 0;
-    let momentumFrame = null;
-
-
     const game = document.getElementById("game");
 
+    const DESIGN_WIDTH = 360;
+    const DESIGN_HEIGHT = 700;
 
-    function getDistance(touch1, touch2) {
-        const dx = touch1.clientX - touch2.clientX;
-            const dy = touch1.clientY - touch2.clientY;
+    const viewportWidth = document.documentElement.clientWidth;
+    const viewportHeight = document.documentElement.clientHeight;
 
-                return Math.sqrt(dx * dx + dy * dy);
-                }
+    const scaleX = viewportWidth / DESIGN_WIDTH;
+    const scaleY = viewportHeight / DESIGN_HEIGHT;
 
+    baseScale = Math.min(scaleX, scaleY);
 
-                function updateGameTransform() {
+    updateGameTransform();
+}
 
-                    game.style.transform =
-                            `translate(calc(-50% + ${panX}px), calc(-50% + ${panY}px)) scale(${baseScale * zoomScale})`;
-                            }
+window.addEventListener("resize", resizeGame);
+window.addEventListener("orientationchange", resizeGame);
 
 
-                            // --------------------------
-                            // TOUCH START
-                            // --------------------------
+// ==========================
+// FULLSCREEN
+// ==========================
 
-                            document.addEventListener("touchstart", function(e) {
+function fullScreen() {
+    const game = document.documentElement;
 
-                                // Two fingers = pinch
-                                    if (e.touches.length === 2) {
+    if (!document.fullscreenElement) {
+        game.requestFullscreen().catch(err => {
+            console.log("Fullscreen failed:", err);
+        });
+    } else {
+        document.exitFullscreen();
+    }
 
-                                            pinchStartDistance = getDistance(
-                                                        e.touches[0],
-                                                                    e.touches[1]
-                                                                            );
+    setTimeout(() => {
+        resizeGame();
+    }, 100);
+}
 
-                                                                                    pinchStartZoom = zoomScale;
 
-                                                                                            dragging = false;
+// ==========================
+// PINCH + SWIPE
+// ==========================
 
-                                                                                                    return;
-                                                                                                        }
+// ==========================
+// PINCH ZOOM + PAN
+// ==========================
 
+let zoomScale = 1;
 
-                                                                                                            // One finger = start dragging
-                                                                                                                if (e.touches.length === 1 && zoomScale > 1) {
+let panX = 0;
+let panY = 0;
 
-                                                                                                                    const touch = e.touches[0];
+let pinchStartDistance = 0;
+let pinchStartZoom = 1;
 
-                                                                                                                        if (momentumFrame) {
-                                                                                                                                cancelAnimationFrame(momentumFrame);
-                                                                                                                                        momentumFrame = null;
-                                                                                                                                            }
+let dragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let dragStartPanX = 0;
+let dragStartPanY = 0;
 
-                                                                                                                                                dragging = true;
+let lastTouchX = 0;
+let lastTouchY = 0;
+let velocityX = 0;
+let velocityY = 0;
+let lastTouchTime = 0;
+let momentumFrame = null;
 
-                                                                                                                                                    dragStartX = touch.clientX;
-                                                                                                                                                        dragStartY = touch.clientY;
 
-                                                                                                                                                            dragStartPanX = panX;
-                                                                                                                                                                dragStartPanY = panY;
+const game = document.getElementById("game");
 
-                                                                                                                                                                    lastTouchX = touch.clientX;
-                                                                                                                                                                        lastTouchY = touch.clientY;
 
-                                                                                                                                                                            velocityX = 0;
-                                                                                                                                                                                velocityY = 0;
+function getDistance(touch1, touch2) {
+    const dx = touch1.clientX - touch2.clientX;
+    const dy = touch1.clientY - touch2.clientY;
 
-                                                                                                                                                                                    lastTouchTime = performance.now();
-                                                                                                                                                                                    }
+    return Math.sqrt(dx * dx + dy * dy);
+}
 
 
-                                                                                                                                                                                    }, { passive: false });
+function updateGameTransform() {
 
+    game.style.transform =
+        `translate(calc(-50% + ${panX}px), calc(-50% + ${panY}px)) scale(${baseScale * zoomScale})`;
+}
 
-                                                                                                                                                                                    // --------------------------
-                                                                                                                                                                                    // TOUCH MOVE
-                                                                                                                                                                                    // --------------------------
 
-                                                                                                                                                                                    document.addEventListener("touchmove", function(e) {
+// --------------------------
+// TOUCH START
+// --------------------------
 
-                                                                                                                                                                                        // PINCH
-                                                                                                                                                                                            if (e.touches.length === 2) {
+document.addEventListener("touchstart", function(e) {
 
-                                                                                                                                                                                                    e.preventDefault();
+    // Two fingers = pinch
+    if (e.touches.length === 2) {
 
-                                                                                                                                                                                                            const distance = getDistance(
-                                                                                                                                                                                                                        e.touches[0],
-                                                                                                                                                                                                                                    e.touches[1]
-                                                                                                                                                                                                                                            );
+        pinchStartDistance = getDistance(
+            e.touches[0],
+            e.touches[1]
+        );
 
-                                                                                                                                                                                                                                                    if (pinchStartDistance > 0) {
+        pinchStartZoom = zoomScale;
 
-                                                                                                                                                                                                                                                                zoomScale =
-                                                                                                                                                                                                                                                                                pinchStartZoom *
-                                                                                                                                                                                                                                                                                                (distance / pinchStartDistance);
+        dragging = false;
 
-                                                                                                                                                                                                                                                                                                            // Minimum = normal size
-                                                                                                                                                                                                                                                                                                                        // Maximum = 3x
-                                                                                                                                                                                                                                                                                                                                    zoomScale = Math.max(
-                                                                                                                                                                                                                                                                                                                                                    1,
-                                                                                                                                                                                                                                                                                                                                                                    Math.min(zoomScale, 6)
-                                                                                                                                                                                                                                                                                                                                                                                );
+        return;
+    }
 
-                                                                                                                                                                                                                                                                                                                                                                                            updateGameTransform();
-                                                                                                                                                                                                                                                                                                                                                                                                    }
 
-                                                                                                                                                                                                                                                                                                                                                                                                            return;
-                                                                                                                                                                                                                                                                                                                                                                                                                }
+    // One finger = start dragging
+    if (e.touches.length === 1 && zoomScale > 1) {
 
+    const touch = e.touches[0];
 
+    if (momentumFrame) {
+        cancelAnimationFrame(momentumFrame);
+        momentumFrame = null;
+    }
 
+    dragging = true;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                // PAN
-                                                                                                                                                                                                                                                                                                                                                                                                                if (
-                                                                                                                                                                                                                                                                                                                                                                                                                    e.touches.length === 1 &&
-                                                                                                                                                                                                                                                                                                                                                                                                                        dragging &&
-                                                                                                                                                                                                                                                                                                                                                                                                                            zoomScale > 1
-                                                                                                                                                                                                                                                                                                                                                                                                                            ) {
+    dragStartX = touch.clientX;
+    dragStartY = touch.clientY;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                e.preventDefault();
+    dragStartPanX = panX;
+    dragStartPanY = panY;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                    const touch = e.touches[0];
+    lastTouchX = touch.clientX;
+    lastTouchY = touch.clientY;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                        const now = performance.now();
-                                                                                                                                                                                                                                                                                                                                                                                                                                            const dt = Math.max(1, now - lastTouchTime);
+    velocityX = 0;
+    velocityY = 0;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                const dx = touch.clientX - lastTouchX;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    const dy = touch.clientY - lastTouchY;
+    lastTouchTime = performance.now();
+}
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        panX += dx;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            panY += dy;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                velocityX = dx / dt;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                    velocityY = dy / dt;
+}, { passive: false });
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        lastTouchX = touch.clientX;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            lastTouchY = touch.clientY;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                lastTouchTime = now;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    updateGameTransform();
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    });
+// --------------------------
+// TOUCH MOVE
+// --------------------------
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    // --------------------------
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    // TOUCH END
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    // --------------------------
+document.addEventListener("touchmove", function(e) {
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    document.addEventListener("touchend", function(e) {
+    // PINCH
+    if (e.touches.length === 2) {
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        if (e.touches.length === 0) {
+        e.preventDefault();
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                dragging = false;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        pinchStartDistance = 0;
+        const distance = getDistance(
+            e.touches[0],
+            e.touches[1]
+        );
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                // Android/Chrome-like momentum
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        let vx = velocityX * 16;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                let vy = velocityY * 16;
+        if (pinchStartDistance > 0) {
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        function momentum() {
+            zoomScale =
+                pinchStartZoom *
+                (distance / pinchStartDistance);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    if (Math.abs(vx) < 0.1 && Math.abs(vy) < 0.1) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    momentumFrame = null;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    return;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+            // Minimum = normal size
+            // Maximum = 3x
+            zoomScale = Math.max(
+                1,
+                Math.min(zoomScale, 6)
+            );
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            panX += vx;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        panY += vy;
+            updateGameTransform();
+        }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    updateGameTransform();
+        return;
+    }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                // Friction
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            vx *= 0.94;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        vy *= 0.94;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    momentumFrame = requestAnimationFrame(momentum);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    momentumFrame = requestAnimationFrame(momentum);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            if (zoomScale <= 1) {
+// PAN
+if (
+    e.touches.length === 1 &&
+    dragging &&
+    zoomScale > 1
+) {
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    zoomScale = 1;
+    e.preventDefault();
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            panX = 0;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    panY = 0;
+    const touch = e.touches[0];
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            if (momentumFrame) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        cancelAnimationFrame(momentumFrame);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    momentumFrame = null;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }
+    const now = performance.now();
+    const dt = Math.max(1, now - lastTouchTime);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    updateGameTransform();
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }
+    const dx = touch.clientX - lastTouchX;
+    const dy = touch.clientY - lastTouchY;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }, { passive: false });
+    panX += dx;
+    panY += dy;
 
+    velocityX = dx / dt;
+    velocityY = dy / dt;
 
+    lastTouchX = touch.clientX;
+    lastTouchY = touch.clientY;
+    lastTouchTime = now;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        // Initial size
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        resizeGame();
+    updateGameTransform();
+}
+});
 
+// --------------------------
+// TOUCH END
+// --------------------------
 
-   }
+document.addEventListener("touchend", function(e) {
+
+    if (e.touches.length === 0) {
+
+        dragging = false;
+        pinchStartDistance = 0;
+
+        // Android/Chrome-like momentum
+        let vx = velocityX * 16;
+        let vy = velocityY * 16;
+
+        function momentum() {
+
+            if (Math.abs(vx) < 0.1 && Math.abs(vy) < 0.1) {
+                momentumFrame = null;
+                return;
+            }
+
+            panX += vx;
+            panY += vy;
+
+            updateGameTransform();
+
+            // Friction
+            vx *= 0.94;
+            vy *= 0.94;
+
+            momentumFrame = requestAnimationFrame(momentum);
+        }
+
+        momentumFrame = requestAnimationFrame(momentum);
+    }
+
+    if (zoomScale <= 1) {
+
+        zoomScale = 1;
+
+        panX = 0;
+        panY = 0;
+
+        if (momentumFrame) {
+            cancelAnimationFrame(momentumFrame);
+            momentumFrame = null;
+        }
+
+        updateGameTransform();
+    }
+
+}, { passive: false });
+
+
+
+// Initial size
+resizeGame();
+
+
+// ==========================
+// YOUR EXISTING SCREEN CODE
+// ==========================
 
 setTimeout(() => {
   document.getElementById("screen").style.display = "none";
 }, 20000);
 
-screen.addEventListener('click', function() {
+screen.addEventListener("click", function() {
   screen.style.display = "none";
-
 });
-
