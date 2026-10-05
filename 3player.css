@@ -17,6 +17,9 @@ body {
 
   left: 50%;
   top: 50%;
+  margin: 0;
+
+  touch-action: none;
 
   transform-origin: center center;
 }
